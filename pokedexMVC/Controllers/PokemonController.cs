@@ -12,13 +12,24 @@ namespace pokedexMVC.Controllers
         public ActionResult Index()
         {
             PokemonNegocio negocio = new PokemonNegocio();
-            return View(negocio.listar());
+            var pokemonsAct = negocio.listar();
+            foreach (Pokemon i in negocio.listar())
+            {
+                if (!i.Activo)
+                {
+                    pokemonsAct.Remove(pokemonsAct.Find(p => p.Id == i.Id));
+                }
+            }
+            return View(pokemonsAct);
         }
 
         // GET: PokemonController/Details/5
         public ActionResult Details(int id)
         {
-            return View();
+            PokemonNegocio negocioPokemon = new PokemonNegocio();
+
+            var pokemon = negocioPokemon.listar().Find(p => p.Id == id);
+            return View(pokemon);
         }
 
         // GET: PokemonController/Create
@@ -37,8 +48,6 @@ namespace pokedexMVC.Controllers
             try
             {
                 PokemonNegocio negocio = new PokemonNegocio();
-                pokemon.Tipo = new Elemento { Id = 1 };
-                pokemon.Debilidad = new Elemento { Id = 2 };
                 negocio.agregar(pokemon);
                 return RedirectToAction(nameof(Index));
             }
@@ -51,16 +60,26 @@ namespace pokedexMVC.Controllers
         // GET: PokemonController/Edit/5
         public ActionResult Edit(int id)
         {
-            return View();
+            ElementoNegocio negocioElemento = new ElementoNegocio();
+            PokemonNegocio negocioPokemon = new PokemonNegocio();
+
+            var pokemon = negocioPokemon.listar().Find(p => p.Id == id);
+
+            var lista = negocioElemento.listar();
+            ViewBag.Tipos = new SelectList(lista, "Id", "Descripcion", pokemon.Tipo.Id);
+            ViewBag.Debilidades = new SelectList(lista, "Id", "Descripcion", pokemon.Debilidad.Id);
+            return View(pokemon);
         }
 
         // POST: PokemonController/Edit/5
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Edit(int id, IFormCollection collection)
+        public ActionResult Edit(int id, Pokemon pokemon)
         {
+            PokemonNegocio negocioPokemon = new PokemonNegocio();
             try
             {
+                negocioPokemon.modificar(pokemon);
                 return RedirectToAction(nameof(Index));
             }
             catch
@@ -72,7 +91,10 @@ namespace pokedexMVC.Controllers
         // GET: PokemonController/Delete/5
         public ActionResult Delete(int id)
         {
-            return View();
+            PokemonNegocio negocioPokemon = new PokemonNegocio();
+
+            var pokemon = negocioPokemon.listar().Find(p => p.Id == id);
+            return View(pokemon);
         }
 
         // POST: PokemonController/Delete/5
@@ -82,6 +104,8 @@ namespace pokedexMVC.Controllers
         {
             try
             {
+                PokemonNegocio negocioPokemon = new PokemonNegocio();
+                negocioPokemon.eliminar(id);
                 return RedirectToAction(nameof(Index));
             }
             catch
