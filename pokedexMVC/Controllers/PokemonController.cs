@@ -1,6 +1,7 @@
 ﻿using dominio;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using negocio;
 
 namespace pokedexMVC.Controllers
@@ -23,6 +24,8 @@ namespace pokedexMVC.Controllers
         // GET: PokemonController/Create
         public ActionResult Create()
         {
+            ElementoNegocio negocioElemento = new ElementoNegocio();
+            ViewBag.Elementos = new SelectList(negocioElemento.listar(), "Id", "Descripcion");
             return View();
         }
 
