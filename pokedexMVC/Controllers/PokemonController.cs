@@ -9,7 +9,7 @@ namespace pokedexMVC.Controllers
     public class PokemonController : Controller
     {
         // GET: PokemonController
-        public ActionResult Index()
+        public ActionResult Index(string filtro)
         {
             PokemonNegocio negocio = new PokemonNegocio();
             var pokemonsAct = negocio.listar();
@@ -20,6 +20,11 @@ namespace pokedexMVC.Controllers
                     pokemonsAct.Remove(pokemonsAct.Find(p => p.Id == i.Id));
                 }
             }
+            if (!string.IsNullOrEmpty(filtro))
+            {
+                pokemonsAct = pokemonsAct.FindAll(p => p.Nombre.ToUpper().Contains(filtro.ToUpper()));
+            }
+            ViewBag.filtro = filtro;
             return View(pokemonsAct);
         }
 
