@@ -10,29 +10,22 @@ using Pokedex_EF.Models;
 
 namespace Pokedex_EF.Controllers
 {
-    public class PokemonController : Controller
+    public class ElementoController : Controller
     {
         private readonly PokemonDbContext _context;
 
-        public PokemonController(PokemonDbContext context)
+        public ElementoController(PokemonDbContext context)
         {
             _context = context;
         }
 
-        // GET: Pokemon
-        public async Task<IActionResult> Index(string filtro)
+        // GET: Elemento
+        public async Task<IActionResult> Index()
         {
-            var pokemonDbContext = _context.Pokemons.Include(p => p.Debilidad).Include(p => p.Tipo);
-            var pokemonDbContextFiltro = await pokemonDbContext.ToListAsync();
-            if (!string.IsNullOrEmpty(filtro))
-            {
-                pokemonDbContextFiltro = pokemonDbContextFiltro.FindAll(p => p.Nombre.ToUpper().Contains(filtro.ToUpper()));
-            }
-            ViewBag.filtro = filtro;
-            return View(pokemonDbContextFiltro);
+            return View(await _context.Elementos.ToListAsync());
         }
 
-        // GET: Pokemon/Details/5
+        // GET: Elemento/Details/5
         public async Task<IActionResult> Details(int? id)
         {
             if (id == null)
@@ -40,68 +33,62 @@ namespace Pokedex_EF.Controllers
                 return NotFound();
             }
 
-            var pokemon = await _context.Pokemons
-                .Include(p => p.Debilidad)
-                .Include(p => p.Tipo)
+            var elemento = await _context.Elementos
                 .FirstOrDefaultAsync(m => m.Id == id);
-            if (pokemon == null)
+            if (elemento == null)
             {
                 return NotFound();
             }
 
-            return View(pokemon);
+            return View(elemento);
         }
 
-        // GET: Pokemon/Create
-        public async Task<IActionResult> Create()
+        // GET: Elemento/Create
+        public IActionResult Create()
         {
-            //ViewData["DebilidadId"] = new SelectList(_context.Elementos, "Id", "Id");
-            //ViewData["TipoId"] = new SelectList(_context.Elementos, "Id", "Id");
-            ViewBag.Elementos = new SelectList(await _context.Elementos.ToListAsync(), "Id", "Descripcion");
             return View();
         }
 
-        // POST: Pokemon/Create
+        // POST: Elemento/Create
         // To protect from overposting attacks, enable the specific properties you want to bind to.
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create( Pokemon pokemon)
+        public async Task<IActionResult> Create(Elemento elemento)
         {
             if (ModelState.IsValid)
             {
-                _context.Add(pokemon);
+                _context.Add(elemento);
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
-            return View(pokemon);
+            return View(elemento);
         }
 
-        // GET: Pokemon/Edit/5
+        // GET: Elemento/Edit/5
         public async Task<IActionResult> Edit(int? id)
         {
-            ViewBag.Elementos = new SelectList(await _context.Elementos.ToListAsync(), "Id", "Descripcion");
             if (id == null)
             {
                 return NotFound();
             }
 
-            var pokemon = await _context.Pokemons.FindAsync(id);
-            if (pokemon == null)
+            var elemento = await _context.Elementos.FindAsync(id);
+            if (elemento == null)
             {
                 return NotFound();
             }
-            return View(pokemon);
+            return View(elemento);
         }
 
-        // POST: Pokemon/Edit/5
+        // POST: Elemento/Edit/5
         // To protect from overposting attacks, enable the specific properties you want to bind to.
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, Pokemon pokemon)
+        public async Task<IActionResult> Edit(int id, [Bind("Id,Descripcion")] Elemento elemento)
         {
-            if (id != pokemon.Id)
+            if (id != elemento.Id)
             {
                 return NotFound();
             }
@@ -110,12 +97,12 @@ namespace Pokedex_EF.Controllers
             {
                 try
                 {
-                    _context.Update(pokemon);
+                    _context.Update(elemento);
                     await _context.SaveChangesAsync();
                 }
                 catch (DbUpdateConcurrencyException)
                 {
-                    if (!PokemonExists(pokemon.Id))
+                    if (!ElementoExists(elemento.Id))
                     {
                         return NotFound();
                     }
@@ -126,12 +113,10 @@ namespace Pokedex_EF.Controllers
                 }
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["DebilidadId"] = new SelectList(_context.Elementos, "Id", "Id", pokemon.DebilidadId);
-            ViewData["TipoId"] = new SelectList(_context.Elementos, "Id", "Id", pokemon.TipoId);
-            return View(pokemon);
+            return View(elemento);
         }
 
-        // GET: Pokemon/Delete/5
+        // GET: Elemento/Delete/5
         public async Task<IActionResult> Delete(int? id)
         {
             if (id == null)
@@ -139,36 +124,34 @@ namespace Pokedex_EF.Controllers
                 return NotFound();
             }
 
-            var pokemon = await _context.Pokemons
-                .Include(p => p.Debilidad)
-                .Include(p => p.Tipo)
+            var elemento = await _context.Elementos
                 .FirstOrDefaultAsync(m => m.Id == id);
-            if (pokemon == null)
+            if (elemento == null)
             {
                 return NotFound();
             }
 
-            return View(pokemon);
+            return View(elemento);
         }
 
-        // POST: Pokemon/Delete/5
+        // POST: Elemento/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            var pokemon = await _context.Pokemons.FindAsync(id);
-            if (pokemon != null)
+            var elemento = await _context.Elementos.FindAsync(id);
+            if (elemento != null)
             {
-                _context.Pokemons.Remove(pokemon);
+                _context.Elementos.Remove(elemento);
             }
 
             await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
         }
 
-        private bool PokemonExists(int id)
+        private bool ElementoExists(int id)
         {
-            return _context.Pokemons.Any(e => e.Id == id);
+            return _context.Elementos.Any(e => e.Id == id);
         }
     }
 }

@@ -7,7 +7,13 @@
 <h1>Index</h1>
 
 <p>
-    <a asp-action="Create">Create New</a>
+    <a asp-action="Create">Create New Pokemon</a>
+</p>
+<p>
+    <form asp-action="Index" method="get">
+        <input type="text" class="form-control" name="filtro" placeholder="Busqueda por nombre..." value="@ViewBag.filtro" />
+        <button class="btn btn-outline-success" type="submit">Buscar</button>
+    </form>
 </p>
 <table class="table">
     <thead>
@@ -22,7 +28,7 @@
                 @Html.DisplayNameFor(model => model.Descripcion)
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.UrlImagen)
+                Imagen
             </th>
             <th>
                 @Html.DisplayNameFor(model => model.Tipo)
@@ -46,13 +52,13 @@
                 @Html.DisplayFor(modelItem => item.Descripcion)
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.UrlImagen)
+                    <img src="@item.UrlImagen" height="50" />
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.Tipo.Id)
+                @Html.DisplayFor(modelItem => item.Tipo.Descripcion)
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.Debilidad.Id)
+                @Html.DisplayFor(modelItem => item.Debilidad.Descripcion)
             </td>
             <td>
                 <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
